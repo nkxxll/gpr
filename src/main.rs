@@ -320,6 +320,7 @@ fn get_default_branch(repo: &Repository, remote_name: &str) -> Option<String> {
     None
 }
 
+#[allow(clippy::too_many_arguments)]
 fn build_pr_url(
     service: GitService,
     owner: &str,
