@@ -87,7 +87,7 @@ fn main() {
             let head = match repo.head() {
                 Ok(head) => head,
                 Err(e) => {
-                    eprintln!("Error getting HEAD: {}", e);
+                    eprintln!("Error getting HEAD ref: {}", e);
                     exit(1);
                 }
             };
