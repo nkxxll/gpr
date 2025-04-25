@@ -1,0 +1,12 @@
+name: pirunner # Continuous Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  say_hello:
+    name: Create a release
+    runs-on: self-hosted
+    steps:
+    - name: hello
+      run: name=$(uname -a) && echo "hello from $name"
