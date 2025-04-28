@@ -124,8 +124,17 @@ fn main() {
         }
     };
 
+    let origin_url = match get_remote_url(&repo, "origin") {
+        Some(url) => url,
+        None => {
+            eprintln!("Remote '{}' not found", remote_name);
+            exit(1);
+        }
+    };
+
     // Parse the remote URL to get the owner and repository
     let (owner, repo_name) = parse_git_url(&remote_url);
+    let (me, _origin_name) = parse_git_url(&origin_url);
 
     // Determine the service type (from args or by URL analysis)
     let service = match args.service {
@@ -152,6 +161,7 @@ fn main() {
     let pr_url = build_pr_url(
         service,
         &owner,
+        &me,
         &repo_name,
         &branch_name,
         &target_branch,
@@ -324,6 +334,7 @@ fn get_default_branch(repo: &Repository, remote_name: &str) -> Option<String> {
 fn build_pr_url(
     service: GitService,
     owner: &str,
+    me: &str,
     repo_name: &str,
     branch_name: &str,
     target_branch: &str,
@@ -333,9 +344,14 @@ fn build_pr_url(
 ) -> String {
     match service {
         GitService::GitHub => {
+            let full_branch_name = if owner != me {
+                &format!("{}:{}", me, branch_name)
+            } else {
+                branch_name
+            };
             let mut url: String = format!(
                 "https://github.com/{}/{}/compare/{}...{}?expand=1",
-                owner, repo_name, target_branch, branch_name
+                owner, repo_name, target_branch, full_branch_name
             );
 
             // Add optional parameters
